@@ -107,10 +107,53 @@
     }
 
     nav .page {
+      display: grid;
+      gap: 10px;
+      padding: 10px 0 12px;
+    }
+
+    .search-panel {
+      position: relative;
+    }
+
+    .search-panel label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .search-panel input {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--ink);
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      outline: none;
+    }
+
+    .search-panel input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(177, 59, 46, 0.12);
+    }
+
+    .search-meta {
+      margin-top: 6px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .nav-links {
       display: flex;
       gap: 18px;
       overflow-x: auto;
-      padding: 12px 0;
       font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
       font-size: 13px;
       white-space: nowrap;
@@ -271,6 +314,24 @@
       font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
     }
 
+    .empty-state {
+      display: none;
+      margin: 42px 0 0;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.82);
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .empty-state.is-visible {
+      display: block;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
     footer {
       padding: 34px 0 60px;
       color: var(--muted);
@@ -311,18 +372,25 @@
 
   <nav aria-label="页面导航">
     <div class="page">
-      <a href="#workflow">使用顺序</a>
-      <a href="#storage">存储芯片</a>
-      <a href="#hbm">HBM / 先进封装</a>
-      <a href="#pcb">PCB / 覆铜板</a>
-      <a href="#server">AI服务器 / 算力</a>
-      <a href="#optical">光模块 / CPO</a>
-      <a href="#compute">算力租赁 / 液冷</a>
-      <a href="#robot">机器人 / 人形机器人</a>
-      <a href="#reducer">减速器</a>
-      <a href="#sensor">传感器</a>
-      <a href="#actuator">执行器</a>
-      <a href="#rules">盘中判断</a>
+      <div class="search-panel" data-searchable>
+        <label for="concept-search">搜索概念池</label>
+        <input id="concept-search" type="search" inputmode="search" autocomplete="off" placeholder="搜索股票 / 代码 / 概念 / 细分方向">
+        <div class="search-meta" id="search-status">输入股票名、代码、概念或细分方向，例如：存储、光模块、603986。</div>
+      </div>
+      <div class="nav-links" aria-label="章节跳转">
+        <a href="#workflow">使用顺序</a>
+        <a href="#storage">存储芯片</a>
+        <a href="#hbm">HBM / 先进封装</a>
+        <a href="#pcb">PCB / 覆铜板</a>
+        <a href="#server">AI服务器 / 算力</a>
+        <a href="#optical">光模块 / CPO</a>
+        <a href="#compute">算力租赁 / 液冷</a>
+        <a href="#robot">机器人 / 人形机器人</a>
+        <a href="#reducer">减速器</a>
+        <a href="#sensor">传感器</a>
+        <a href="#actuator">执行器</a>
+        <a href="#rules">盘中判断</a>
+      </div>
     </div>
   </nav>
 
@@ -745,10 +813,77 @@
         <strong>风险声明：</strong>本页面用于题材学习和复盘归类，不构成投资建议。短线交易必须结合当日涨停原因、分时联动、成交额、板块梯队和个人风控执行，不能只凭概念标签买入。
       </div>
     </section>
+    <div class="empty-state" id="search-empty">
+      没有找到匹配内容。可以换一个关键词，比如股票代码、公司名、概念名或“真实细分”。
+    </div>
   </main>
 
   <footer class="page">
     <p>Data source: local structured concept map v1. Keep updating with new announcements and daily limit-up reasons.</p>
   </footer>
+  <script>
+    const searchInput = document.getElementById("concept-search");
+    const searchStatus = document.getElementById("search-status");
+    const searchEmpty = document.getElementById("search-empty");
+    const sections = Array.from(document.querySelectorAll("main section"));
+
+    function normalizeSearchText(value) {
+      return value.trim().toLowerCase().replace(/\s+/g, "");
+    }
+
+    function filterConceptCards() {
+      const query = normalizeSearchText(searchInput.value);
+      let visibleCards = 0;
+      let visibleSections = 0;
+
+      sections.forEach((section) => {
+        const cards = Array.from(section.querySelectorAll(".card"));
+        const sectionText = normalizeSearchText(section.textContent);
+
+        if (!query) {
+          section.hidden = false;
+          cards.forEach((card) => {
+            card.hidden = false;
+          });
+          visibleSections += 1;
+          visibleCards += cards.length;
+          return;
+        }
+
+        if (cards.length === 0) {
+          const sectionMatches = sectionText.includes(query);
+          section.hidden = !sectionMatches;
+          if (sectionMatches) {
+            visibleSections += 1;
+          }
+          return;
+        }
+
+        let sectionHasVisibleCard = false;
+        cards.forEach((card) => {
+          const cardMatches = normalizeSearchText(card.textContent).includes(query);
+          card.hidden = !cardMatches;
+          if (cardMatches) {
+            sectionHasVisibleCard = true;
+            visibleCards += 1;
+          }
+        });
+
+        const sectionMatches = sectionText.includes(query);
+        section.hidden = !sectionHasVisibleCard && !sectionMatches;
+        if (!section.hidden) {
+          visibleSections += 1;
+        }
+      });
+
+      const hasResult = visibleSections > 0;
+      searchEmpty.classList.toggle("is-visible", query && !hasResult);
+      searchStatus.textContent = query
+        ? (hasResult ? `已筛选：${visibleCards} 个相关卡片。` : "没有找到匹配内容。")
+        : "输入股票名、代码、概念或细分方向，例如：存储、光模块、603986。";
+    }
+
+    searchInput.addEventListener("input", filterConceptCards);
+  </script>
 </body>
 </html>
