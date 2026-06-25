@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A 股题材概念池 - AI硬件、半导体与机器人链</title>
+  <style>
+    :root {
+      --ink: #111111;
+      --text: #20242a;
+      --muted: #65707d;
+      --line: #d8dbe0;
+      --paper: #fffdfa;
+      --wash: #f2f0ea;
+      --card: #ffffff;
+      --accent: #b13b2e;
+      --blue: #244e73;
+      --green: #176b45;
+      --gold: #9a6a16;
+      --max: 1240px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background:
+        linear-gradient(90deg, rgba(17, 17, 17, 0.035) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(0deg, rgba(17, 17, 17, 0.025) 1px, transparent 1px) 0 0 / 48px 48px,
+        var(--paper);
+      font-family: Georgia, "Times New Roman", "Songti SC", "SimSun", serif;
+      line-height: 1.68;
+    }
+
+    .page {
+      width: min(100% - 32px, var(--max));
+      margin: 0 auto;
+    }
+
+    header {
+      min-height: 86vh;
+      display: grid;
+      align-items: end;
+      padding: 40px 0 54px;
+      border-bottom: 1px solid var(--ink);
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 120px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+    }
+
+    .kicker::before {
+      content: "";
+      display: inline-block;
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    h1 {
+      max-width: 980px;
+      margin: 18px 0 24px;
+      color: var(--ink);
+      font-size: clamp(46px, 8vw, 104px);
+      line-height: 0.98;
+      letter-spacing: 0;
+      font-weight: 500;
+    }
+
+    .lead {
+      max-width: 880px;
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(18px, 2vw, 26px);
+      line-height: 1.56;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(255, 253, 250, 0.92);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    nav .page {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 12px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+
+    section {
+      padding: 70px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 48px;
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.08;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 20px;
+      line-height: 1.3;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    .sans {
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .chain-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      min-height: 100%;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .stock-card {
+      display: grid;
+      gap: 12px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      padding: 2px 8px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      color: var(--blue);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .tag.good {
+      color: var(--green);
+    }
+
+    .tag.warn {
+      color: var(--gold);
+    }
+
+    .field {
+      display: grid;
+      gap: 4px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+    }
+
+    .field strong {
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .workflow {
+      counter-reset: item;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .workflow li {
+      position: relative;
+      min-height: 120px;
+      padding: 40px 14px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--card);
+    }
+
+    .workflow li::before {
+      counter-increment: item;
+      content: counter(item, decimal-leading-zero);
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    .warning {
+      padding: 20px;
+      border: 1px solid #fed7aa;
+      border-left: 4px solid var(--gold);
+      border-radius: 8px;
+      background: #fff7ed;
+      font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    footer {
+      padding: 34px 0 60px;
+      color: var(--muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .section-head,
+      .grid,
+      .chain-grid,
+      .workflow {
+        grid-template-columns: 1fr;
+      }
+
+      .topline {
+        margin-bottom: 64px;
+      }
+
+      header {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page">
+    <div>
+      <div class="topline">
+        <span>CONCEPT MAP / AI HARDWARE, SEMICONDUCTOR & ROBOTICS</span>
+        <span>2026-06-25 v1</span>
+      </div>
+      <div class="kicker">盘中题材归类工具</div>
+      <h1>A 股题材概念池</h1>
+      <p class="lead">这不是另一个粗糙概念池。它的目标是把“某只票涨了”拆成真实细分、产业链位置、短线角色和同涨同跌观察对象，帮你避免把趋势中军、蹭概念后排和当日前排混在一起。</p>
+    </div>
+  </header>
+
+  <nav aria-label="页面导航">
+    <div class="page">
+      <a href="#workflow">使用顺序</a>
+      <a href="#storage">存储芯片</a>
+      <a href="#hbm">HBM / 先进封装</a>
+      <a href="#pcb">PCB / 覆铜板</a>
+      <a href="#server">AI服务器 / 算力</a>
+      <a href="#optical">光模块 / CPO</a>
+      <a href="#compute">算力租赁 / 液冷</a>
+      <a href="#robot">机器人 / 人形机器人</a>
+      <a href="#reducer">减速器</a>
+      <a href="#sensor">传感器</a>
+      <a href="#actuator">执行器</a>
+      <a href="#rules">盘中判断</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section id="workflow">
+      <div class="section-head">
+        <div class="eyebrow">00 / METHOD</div>
+        <h2>先找涨停原因，再看资金是否真的选它</h2>
+      </div>
+      <ol class="workflow">
+        <li>先找涨停原因，不要只看同花顺概念标签。</li>
+        <li>拆真实细分：本体、模组、封测、材料、设备、下游应用。</li>
+        <li>看同时间跟涨：核心封板时，它有没有同步放量变强。</li>
+        <li>定短线角色：龙头、换手前排、中军、补涨还是后排。</li>
+        <li>最后才谈买点；地位不清楚，就先放弃。</li>
+      </ol>
+    </section>
+
+    <section id="storage">
+      <div class="section-head">
+        <div class="eyebrow">01 / STORAGE</div>
+        <h2>存储芯片：别把材料链误当存储本体</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>兆易创新 603986</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">存储芯片</span><span class="tag">中游芯片设计</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>真实细分</strong><span>存储芯片 / NOR Flash / MCU</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 存储辨识度核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是小盘连板情绪票，更多是存储线的大成交中军。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>德明利、深科技、北京君正、普冉股份</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>德明利 001309</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">存储模组</span><span class="tag">存储控制</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>真实细分</strong><span>存储模组 / 存储控制芯片</span></div>
+          <div class="field"><strong>短线角色</strong><span>换手前排 / 弹性核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>弹性强但波动也大，不能用中军低吸逻辑去追高。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>兆易创新、深科技、佰维存储、江波龙</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>深科技 000021</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">存储封测</span><span class="tag">电子制造</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>真实细分</strong><span>存储封测 / 电子制造</span></div>
+          <div class="field"><strong>短线角色</strong><span>主板中军 / 跟随前排</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是存储芯片设计本体，更偏封测和制造链。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>兆易创新、德明利、太极实业</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>太极实业 600667</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">封测扩散</span><span class="tag warn">正宗度中</span></div>
+          <div class="field"><strong>真实细分</strong><span>半导体封测 / 工程服务</span></div>
+          <div class="field"><strong>短线角色</strong><span>补涨 / 跟随</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是存储涨价最短路径，更多是封测扩散票。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>深科技、长电科技、通富微电</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="hbm">
+      <div class="section-head">
+        <div class="eyebrow">02 / HBM & PACKAGING</div>
+        <h2>HBM / 先进封装：本体、封测、载板不是一回事</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>长电科技 600584</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">封测</span><span class="tag">先进封装</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 封测核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>是封测核心，不是 HBM 存储芯片本体。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>通富微电、华天科技、深科技</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>通富微电 002156</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">封测弹性</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>换手前排 / 封测弹性核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>弹性强于部分中军，但更吃情绪和板块强度。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>长电科技、华天科技、深科技</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>华天科技 002185</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">封测</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>跟随前排 / 中军跟随</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>通常不是最强龙头，更适合看封测板块整体强度。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>长电科技、通富微电</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>兴森科技 002436</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">IC载板</span><span class="tag">PCB</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>材料/载板弹性票</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>也属于 PCB 链，需判断当天炒的是载板还是普通 PCB。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>深南电路、沪电股份、长电科技</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="pcb">
+      <div class="section-head">
+        <div class="eyebrow">03 / PCB MATERIALS</div>
+        <h2>PCB / 覆铜板：生益科技是材料中军，不是存储本体</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>沪电股份 002463</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">高速PCB</span><span class="tag">AI服务器板</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>趋势核心 / PCB 中军</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是存储芯片本体，是 AI 硬件 PCB 方向核心。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>生益科技、深南电路、景旺电子</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>生益科技 600183</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">覆铜板</span><span class="tag">高速材料</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>趋势中军 / 材料中军</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>如果当天只炒存储涨价，它未必是前排；只有 PCB/高速材料同步走强时才当核心看。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>沪电股份、深南电路、景旺电子、胜宏科技</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>深南电路 002916</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">PCB</span><span class="tag">封装基板</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 双属性核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>可能跟 PCB 走，也可能跟先进封装载板走，需看同涨对象。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>沪电股份、生益科技、兴森科技</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>景旺电子 603228</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">PCB</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>跟随前排 / 补涨</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>通常不是第一龙头，需看是否强于 PCB 板块平均。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>沪电股份、生益科技、深南电路</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="server">
+      <div class="section-head">
+        <div class="eyebrow">04 / AI SERVER</div>
+        <h2>AI服务器 / 算力：服务器、网络、光模块要分开看</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>工业富联 601138</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">AI服务器</span><span class="tag">容量中军</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不适合用小票连板预期看它，更适合看趋势和成交额。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>浪潮信息、沪电股份、生益科技</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>浪潮信息 000977</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">服务器整机</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>它强不代表所有算力租赁小票都能买，属于服务器整机线。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>工业富联、紫光股份、中科曙光</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>紫光股份 000938</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">网络设备</span><span class="tag">ICT</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 网络设备核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是服务器整机，也不是光模块，更多是网络/ICT 设备。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>浪潮信息、中科曙光、工业富联</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>中科曙光 603019</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">国产算力</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 国产算力核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>更偏国产算力基础设施，不等同于光模块或 PCB 材料。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>浪潮信息、紫光股份、工业富联</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>光迅科技 002281</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">光模块</span><span class="tag">光通信</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>光通信主板映射 / 跟随核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>光模块主线强时才正宗；服务器整机强不等于它必然强。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>剑桥科技、中际旭创、新易盛</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>剑桥科技 603083</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">CPO人气</span><span class="tag warn">正宗度中</span></div>
+          <div class="field"><strong>短线角色</strong><span>情绪人气票 / 换手弹性</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>辨识度来自历史人气和光通信属性，不一定每轮都是基本面最强。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>光迅科技、中际旭创、新易盛</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="optical">
+      <div class="section-head">
+        <div class="eyebrow">05 / OPTICAL</div>
+        <h2>光模块 / CPO：别把服务器强势误判成光模块主线</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>华工科技 000988</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">光模块</span><span class="tag">激光装备</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>主板光模块中军 / 跟随核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>业务较多，只有光模块链同步走强时才按光模块核心看。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>光迅科技、剑桥科技、中际旭创、新易盛</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>光迅科技 002281</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">光通信器件</span><span class="tag">光模块</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>主板光通信映射 / 跟随核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>光模块主线强时才正宗；服务器整机强不等于它必然强。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>华工科技、剑桥科技、中际旭创、新易盛</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>剑桥科技 603083</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">CPO人气</span><span class="tag warn">正宗度中</span></div>
+          <div class="field"><strong>短线角色</strong><span>情绪人气票 / 换手弹性</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>历史人气很强，但不代表每一轮都是基本面最强的光模块核心。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>华工科技、光迅科技、中际旭创、新易盛</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>中际旭创 300308</h3>
+          <div class="meta"><span class="tag warn">创业板风向标</span><span class="tag">高速光模块</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>风向标 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不能做创业板时，只作为风向标；它强，才看主板映射有没有跟。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>新易盛、天孚通信、华工科技、光迅科技</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="compute">
+      <div class="section-head">
+        <div class="eyebrow">06 / COMPUTE INFRA</div>
+        <h2>算力租赁 / 液冷 / 电源：运营、IDC、温控、电源不是一条线</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>中贝通信 603220</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">算力服务</span><span class="tag warn">正宗度中</span></div>
+          <div class="field"><strong>短线角色</strong><span>情绪弹性票 / 算力租赁前排候选</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是服务器硬件中军，更偏算力运营弹性，情绪属性更重。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>润建股份、数据港、科华数据、英维克</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>润建股份 002929</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">通信运维</span><span class="tag">算力服务</span></div>
+          <div class="field"><strong>短线角色</strong><span>跟随前排 / 弹性票</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>更偏服务和运营，不是硬件服务器或光模块。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>中贝通信、数据港、科华数据</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>英维克 002837</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">液冷</span><span class="tag">温控</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>液冷中军 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>它是液冷温控线，不是服务器整机或算力租赁。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>科华数据、申菱环境、高澜股份</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>科华数据 002335</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">UPS电源</span><span class="tag">数据中心</span></div>
+          <div class="field"><strong>短线角色</strong><span>电源配套中军 / 跟随核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是算力租赁票，更多是数据中心配套和电源链。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>英维克、数据港、中贝通信</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="robot">
+      <div class="section-head">
+        <div class="eyebrow">07 / HUMANOID ROBOT</div>
+        <h2>机器人 / 人形机器人：整机、执行器、减速器、传感器要拆开</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>三花智控 002050</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">执行器</span><span class="tag">热管理</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 执行器核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是小盘连板机器人票，更偏大资金趋势中军。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>拓普集团、鸣志电器、五洲新春、北特科技</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>拓普集团 601689</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">机器人零部件</span><span class="tag">汽零映射</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>要区分是汽零上涨，还是机器人零部件逻辑上涨。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>三花智控、鸣志电器、五洲新春</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>埃斯顿 002747</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">工业机器人</span><span class="tag">整机</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>整机中军 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>偏工业机器人整机，不是减速器或传感器零部件。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>新时达、机器人、拓普集团</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>新时达 002527</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">机器人控制</span><span class="tag warn">正宗度中</span></div>
+          <div class="field"><strong>短线角色</strong><span>情绪弹性票 / 补涨</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>情绪属性较重，不能当成机器人核心中军看。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>埃斯顿、中大力德、巨轮智能</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="reducer">
+      <div class="section-head">
+        <div class="eyebrow">08 / REDUCER</div>
+        <h2>减速器：谐波、RV、齿轮传动，不等于所有机器人票</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>中大力德 002896</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">减速器</span><span class="tag">电机</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>减速器前排 / 情绪弹性</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>高弹性不等于低风险，常随机器人情绪剧烈波动。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>双环传动、秦川机床、巨轮智能、绿的谐波</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>双环传动 002472</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">齿轮传动</span><span class="tag">减速器</span></div>
+          <div class="field"><strong>短线角色</strong><span>减速器中军 / 趋势核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>也有汽零属性，需看当天是机器人传动还是汽零趋势。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>中大力德、秦川机床、五洲新春</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>秦川机床 000837</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">机床</span><span class="tag">减速器映射</span></div>
+          <div class="field"><strong>短线角色</strong><span>跟随前排 / 题材弹性</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>可能跟工业母机走，也可能跟减速器走，需看同涨对象。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>中大力德、双环传动、巨轮智能</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>巨轮智能 002031</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">机器人情绪</span><span class="tag warn">正宗度中</span></div>
+          <div class="field"><strong>短线角色</strong><span>情绪人气票 / 补涨</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>更多是情绪辨识度，不宜当作最正宗减速器本体。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>中大力德、新时达、秦川机床</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="sensor">
+      <div class="section-head">
+        <div class="eyebrow">09 / SENSOR</div>
+        <h2>传感器：力传感、视觉、车载传感不是同一个分支</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>柯力传感 603662</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">力传感器</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>传感器前排 / 弹性核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>它是传感器线，不是减速器或执行器线。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>汉威科技、保隆科技、奥比中光</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>保隆科技 603197</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">汽车传感器</span><span class="tag">智能驾驶</span></div>
+          <div class="field"><strong>短线角色</strong><span>传感器中军 / 跟随</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>更偏汽零传感，不是纯机器人力传感器。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>柯力传感、华工科技、均胜电子</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>汉威科技 300007</h3>
+          <div class="meta"><span class="tag warn">创业板风向标</span><span class="tag">气体传感器</span><span class="tag">物联网感知</span></div>
+          <div class="field"><strong>短线角色</strong><span>风向标 / 弹性票</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不能做创业板时，只作方向观察。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>柯力传感、保隆科技、奥比中光</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="actuator">
+      <div class="section-head">
+        <div class="eyebrow">10 / ACTUATOR</div>
+        <h2>执行器 / 电机 / 丝杠：这是人形机器人最容易被混买的链</h2>
+      </div>
+      <div class="chain-grid">
+        <article class="card stock-card">
+          <h3>鸣志电器 603728</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">控制电机</span><span class="tag">运动控制</span><span class="tag good">正宗度高</span></div>
+          <div class="field"><strong>短线角色</strong><span>电机前排 / 换手弹性</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>它是电机/运动控制线，不是减速器线。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>三花智控、拓普集团、五洲新春、江苏雷利</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>五洲新春 603667</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">轴承</span><span class="tag">丝杠</span><span class="tag">正宗度中高</span></div>
+          <div class="field"><strong>短线角色</strong><span>丝杠/轴承弹性核心</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>要区分是丝杠轴承线，还是机器人整体情绪补涨。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>北特科技、贝斯特、三花智控、鸣志电器</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>北特科技 603009</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">丝杠预期</span><span class="tag">汽零</span></div>
+          <div class="field"><strong>短线角色</strong><span>丝杠弹性票 / 补涨前排</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>更偏预期映射，需看是否有分支联动支撑。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>五洲新春、贝斯特、三花智控</span></div>
+        </article>
+        <article class="card stock-card">
+          <h3>恒立液压 601100</h3>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">液压件</span><span class="tag">执行机构</span></div>
+          <div class="field"><strong>短线角色</strong><span>容量中军 / 高端装备映射</span></div>
+          <div class="field"><strong>容易混淆点</strong><span>不是机器人小票，更多是高端制造大票映射。</span></div>
+          <div class="field"><strong>同涨同跌观察</strong><span>三花智控、拓普集团、鸣志电器</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="section-head">
+        <div class="eyebrow">05 / CHECKLIST</div>
+        <h2>没涨停的票，先看它是不是同线变强</h2>
+      </div>
+      <div class="grid sans">
+        <article class="card">
+          <h3>同时间</h3>
+          <p>涨停锚点封板时，它是否同步放量拉升？如果核心封板它横着不动，先别强行归类。</p>
+        </article>
+        <article class="card">
+          <h3>同方向</h3>
+          <p>它是跟存储本体走，还是跟 PCB 材料、封测、服务器、光模块走？谁一起动，就归哪一队。</p>
+        </article>
+        <article class="card">
+          <h3>强于平均</h3>
+          <p>板块涨 2%，它涨 1% 不算强；板块涨 2%，它放量涨 6% 才像资金选中。</p>
+        </article>
+      </div>
+      <div class="warning" style="margin-top: 20px;">
+        <strong>风险声明：</strong>本页面用于题材学习和复盘归类，不构成投资建议。短线交易必须结合当日涨停原因、分时联动、成交额、板块梯队和个人风控执行，不能只凭概念标签买入。
+      </div>
+    </section>
+  </main>
+
+  <footer class="page">
+    <p>Data source: local structured concept map v1. Keep updating with new announcements and daily limit-up reasons.</p>
+  </footer>
+</body>
+</html>
