@@ -1062,6 +1062,12 @@
       sections.forEach((section) => {
         const cards = Array.from(section.querySelectorAll(".card"));
         const sectionText = normalizeSearchText(section.textContent);
+        const sectionHeadText = normalizeSearchText(
+          Array.from(section.children)
+            .filter((child) => child.classList.contains("section-head"))
+            .map((child) => child.textContent)
+            .join(" ")
+        );
 
         if (!query) {
           section.hidden = false;
@@ -1079,6 +1085,16 @@
           if (sectionMatches) {
             visibleSections += 1;
           }
+          return;
+        }
+
+        if (sectionHeadText.includes(query)) {
+          section.hidden = false;
+          cards.forEach((card) => {
+            card.hidden = false;
+          });
+          visibleSections += 1;
+          visibleCards += cards.length;
           return;
         }
 
