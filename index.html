@@ -658,7 +658,7 @@
       <div class="chain-grid">
         <article class="card stock-card">
           <h3>三花智控 002050</h3>
-          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">执行器</span><span class="tag">液冷温控</span><span class="tag">热管理</span><span class="tag good">正宗度高</span></div>
+          <div class="meta"><span class="tag good">主板可参与</span><span class="tag">执行器</span><span class="tag">热管理</span><span class="tag good">正宗度高</span></div>
           <div class="field"><strong>短线角色</strong><span>容量中军 / 执行器核心</span></div>
           <div class="field"><strong>容易混淆点</strong><span>不是小盘连板机器人票，更偏大资金趋势中军。</span></div>
           <div class="field"><strong>同涨同跌观察</strong><span>拓普集团、鸣志电器、五洲新春、北特科技</span></div>
@@ -1054,8 +1054,26 @@
       return value.trim().toLowerCase().replace(/\s+/g, "");
     }
 
+    const branchQueries = new Set([
+      "pcb上游材料",
+      "pcb中游板厂",
+      "液冷温控"
+    ]);
+
+    function getCardSearchText(card, strictBranchMode) {
+      if (!strictBranchMode) {
+        return card.textContent;
+      }
+      const titleText = card.querySelector("h3")?.textContent || "";
+      const tagText = Array.from(card.querySelectorAll(".tag"))
+        .map((tag) => tag.textContent)
+        .join(" ");
+      return `${titleText} ${tagText}`;
+    }
+
     function filterConceptCards() {
       const query = normalizeSearchText(searchInput.value);
+      const strictBranchMode = branchQueries.has(query);
       let visibleCards = 0;
       let visibleSections = 0;
 
@@ -1084,7 +1102,7 @@
 
         let sectionHasVisibleCard = false;
         cards.forEach((card) => {
-          const cardMatches = normalizeSearchText(card.textContent).includes(query);
+          const cardMatches = normalizeSearchText(getCardSearchText(card, strictBranchMode)).includes(query);
           card.hidden = !cardMatches;
           if (cardMatches) {
             sectionHasVisibleCard = true;
@@ -1092,7 +1110,7 @@
           }
         });
 
-        const sectionMatches = sectionText.includes(query);
+        const sectionMatches = !strictBranchMode && sectionText.includes(query);
         section.hidden = !sectionHasVisibleCard && !sectionMatches;
         if (!section.hidden) {
           visibleSections += 1;
